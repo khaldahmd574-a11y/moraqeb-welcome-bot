@@ -39,7 +39,12 @@ BLOCKED_KEYWORDS = [
     "دخل يومي", "دخل خاص", "اجازه مرضيه", "اجازات مرضيه", "تقارير طبيه",
     "تقرير طبي", "والاعذار", "الاعذار", "مناهل", "تطلع اجازات", "اجازات مرضية",
     "وتقارير طبية", "مرافق مريض", "مشهد مراجعة", "تدليك الجسم", "يبغى فلوس",
-    "اجازه", "تقارير", "طبيه", "مرضيه", "الاجازات"
+    "اجازه", "تقارير", "طبيه", "مرضيه", "الاجازات",
+    # الكلمات الجديدة المضافة:
+    "انيك عارك", "كس امك", "كس اختك", "مخنوث", "مخنيث", "قحبه", "قحبة",
+    "جراره", "جرار", "فتال", "فتاله", "بنت قحبه", "بنات قحبه",
+    "عملات رقميه", "مجال حلو", "افضل من الوظيفه", "يستثمر بنفسه",
+    "دخلت في مجال", "يدخل مجال", "ندخله مجال"
 ]
 
 def normalize_text(text: str) -> str:
@@ -87,6 +92,15 @@ async def main():
             user = chat_member.new_chat_member.user
             if not user or user.is_bot:
                 return
+
+            # إلغاء الترحيب إذا تم إضافة العضو بواسطة مشرف/أدمن
+            if chat_member.from_user:
+                try:
+                    inviter_info = await client.get_chat_member(chat_member.chat.id, chat_member.from_user.id)
+                    if inviter_info.status.value in ["administrator", "owner"]:
+                        return
+                except Exception:
+                    pass
 
             try:
                 member_info = await client.get_chat_member(chat_member.chat.id, user.id)
@@ -156,3 +170,4 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+
